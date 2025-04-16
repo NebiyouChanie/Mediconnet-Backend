@@ -118,7 +118,7 @@ const login = async (req, res) => {
       });
     }
 
-    generateToken(user._id, user.hospitalId, user.role, res);
+    generateToken(user._id, user.hospitalID, user.role, res);
 
     res.status(200).json({
       success: true,

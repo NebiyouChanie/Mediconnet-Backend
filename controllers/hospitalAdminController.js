@@ -6,6 +6,8 @@ const Receptionist = require("../models/Receptionist");
 const Triage = require("../models/Triage");
 const Patient = require("../models/Patient");
 
+const bcrypt = require("bcrypt");
+
 const addStaffAccount = async (req, res) => {
   try {
     const {
@@ -23,13 +25,12 @@ const addStaffAccount = async (req, res) => {
 
     const { role: staffRole } = req.user;
 
-    if (!staffRole || staffRole != "HospitalAdministrator") {
+    if (!staffRole || staffRole !== "HospitalAdministrator") {
       return res
         .status(400)
         .json({ message: "Only hospital admins can add staff member" });
     }
 
-    // Ensure role is provided
     if (!role) {
       return res.status(400).json({ message: "Role is required." });
     }
@@ -44,19 +45,25 @@ const addStaffAccount = async (req, res) => {
       triage: Triage,
     };
 
-    // Check if the role exists in RoleModels
     if (!RoleModels[lowerCaseRole]) {
       return res.status(400).json({ message: "Invalid role provided." });
     }
 
-    // Create an instance of the role-specific model
+    const existingStaff = await User.findOne({email:email})
+    if (existingStaff) {
+      return res.status(400).json({ message: "Staff Already Exist." });
+    }
+    // 🔐 Hash the password using bcrypt
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
     const StaffModel = RoleModels[lowerCaseRole];
     const staff = new StaffModel({
       firstName,
       lastName,
       dateOfBirth,
       gender,
-      password,
+      password: hashedPassword, 
       contactNumber,
       address,
       hospitalID,
@@ -64,8 +71,8 @@ const addStaffAccount = async (req, res) => {
       email,
     });
 
-    // Save the new staff member
     await staff.save();
+
     res
       .status(201)
       .json({ message: "Staff account created successfully", staff });
@@ -76,6 +83,21 @@ const addStaffAccount = async (req, res) => {
       .json({ message: "Error creating staff account", error: error.message });
   }
 };
+
+
+
+const getStaffAccounts = async (req, res) => {
+  try {
+    const staffs = await User.find();
+
+    res.status(200).json(  staffs );
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something Went Wrong"});
+  }
+};
+
 
 const deleteStaffAccount = async (req, res) => {
   try {
@@ -131,6 +153,7 @@ const viewPatientsByHospital = async (req, res) => {
 
 module.exports = {
   addStaffAccount,
+  getStaffAccounts,
   deleteStaffAccount,
   viewPatientsByHospital,
 };

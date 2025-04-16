@@ -30,7 +30,7 @@ app.use(
 );
 app.use(cookieParser());
 
-app.use("/api/hospitalStaff", hospitalAdminRoutes);
+app.use("/api/hospital-admin", hospitalAdminRoutes);
 app.use("/api/systemAdmin", systemAdminRoutes);
 app.use("/api/reception", receptionistRoutes);
 app.use("/api/triage", triageRoutes);

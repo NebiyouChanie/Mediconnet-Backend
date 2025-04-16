@@ -5,7 +5,7 @@ const doctorSchema = new mongoose.Schema({
     hospitalID: { type: mongoose.Schema.Types.ObjectId, ref: 'Hospital', required: true },
     contactNumber: { type: String, required: true },
     address: { type: String, required: true },
-    specialization: { type: String } // Added as it's common for doctors
+    specialization: { type: String }  
 });
 
 const Doctor = User.discriminator('Doctor', doctorSchema);

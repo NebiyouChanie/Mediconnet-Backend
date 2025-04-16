@@ -8,7 +8,7 @@ const doctor = require("../models/Doctor.js");
 const Patient = require("../models/Patient.js");
 const HospitalAdministrator = require("../models/HospitalAdministrator.js");
 const Hospital = require("../models/Hospital.js");
-const User = require("../models/User.js");
+const User = require("../models/user.js");
 
 const registerHospital = async (req, res) => {
   try {
@@ -18,7 +18,7 @@ const registerHospital = async (req, res) => {
         msg: "only admins can add a hospital",
       });
     }
-
+    
     const hospitalData = req.body;
 
     const existingHospital = await Hospital.findOne({
